@@ -1,4 +1,4 @@
-This is a small discord bot for logging deleted proxy messages from pluralkit
+This is a small discord bot for logging deleted proxy messages from pluralkit, styled in gearbots deletion format
 
 Env Variables:
 

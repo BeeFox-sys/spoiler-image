@@ -15,6 +15,9 @@ TIMEZONE must be a valid time zone in javascript
 Example Deletion
 ---
 [14:34] 🗑 Proxied Message by PluralKit#4020 (`466378653216014359`)
+
 (system: `exmpl`, member: `loxqc` member: Myriad)
+
 in #general has been removed.
+
 **Content:** this message will be deleted!

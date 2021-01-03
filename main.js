@@ -19,10 +19,6 @@ client.on("messageDelete", async (message)=>{
     if(!logChannel) return
     if(!logChannel.permissionsFor(client.user).has("SEND_MESSAGES")) return console.log("⚠ Missing send messages permission in log channel!")
 
-    // console.log("a")
-
-    // console.log(message.id.toString())
-
     let pkMessage = await fetch("https://api.pluralkit.me/v1/msg/"+message.id).then(b=>{
         // console.log(b)
         if(!b.ok) return null
@@ -30,10 +26,6 @@ client.on("messageDelete", async (message)=>{
     })
     if(pkMessage == null) return;
     if(message.id == pkMessage.original) return;
-    // console.log(pkMessage)
-    // console.log(message.id == pkMessage.original)
-    // console.log(pkMessage);
-
 
     let time = new Date().toLocaleTimeString('en-US',{hour12: false, hour: '2-digit', minute: '2-digit', timeZone: process.env.TIMEZONE})
     let systemID = pkMessage.system.id
@@ -46,9 +38,43 @@ client.on("messageDelete", async (message)=>{
 
     let logMessage = `[${time}] 🗑 Proxied Message by ${accountName} (\`${accountID}\`)\n(system: \`${systemID}\`, member: \`${memberID}\` member: ${pkMessage.member.name} )\nin ${channel} has been removed.\n**Content:** ${content}`
 
-    console.log("Proxy Message Deleted")
+    console.log(Date.now(),"Proxy Message Deleted")
 
     logChannel.send(logMessage, {disableMentions: "all"}).catch(console.error)
 })
+
+client.on("messageUpdate",async (oldMessage,message)=>{
+    let logChannel = await client.channels.fetch(process.env.CHANNEL).catch(()=>{console.error("⚠ Cannot Fetch Log Channel");});
+    if(!logChannel) return
+    if(!logChannel.permissionsFor(client.user).has("SEND_MESSAGES")) return console.log("⚠ Missing send messages permission in log channel!")
+
+    let pkMessage = await fetch("https://api.pluralkit.me/v1/msg/"+message.id).then(b=>{
+        // console.log(b)
+        if(!b.ok) return null
+        return b.json()
+    })
+    if(pkMessage == null) return;
+    if(message.id == pkMessage.original) return;
+
+    let time = new Date().toLocaleTimeString('en-US',{hour12: false, hour: '2-digit', minute: '2-digit', timeZone: process.env.TIMEZONE})
+    let systemID = pkMessage.system.id
+    let memberID = pkMessage.member.id
+    let sender = await client.users.fetch(pkMessage.sender)
+    let accountName = sender.tag
+    let accountID = pkMessage.sender
+    let channel = message.channel.toString()
+    let content = message.cleanContent
+    let oldContent = oldMessage.cleanContent
+
+    let logMessage = `[${time}] ✏ Proxied Message by ${accountName} (\`${accountID}\`)\n(system: \`${systemID}\`, member: \`${memberID}\` member: ${pkMessage.member.name} )\nin ${channel} has been edited.\n**Old:** ${oldContent}\n**New:** ${content}`
+
+    console.log(Date.now(),"Proxy Message Deleted")
+
+    logChannel.send(logMessage, {disableMentions: "all"}).catch(console.error)
+})
+
+// [18:58:20]  :gearEdit: Message by marn#9506 (131622357834924032) in #fanwork has been edited.
+// Old: one of my discord servers was joking that seb telephone only buys clothes at bad early-aughts stores like claires and limited too so i made a seb dressup base and did what i had to do (i can link the psd of the base if anybody else wants to dress up seb!)
+// New: one of my discord servers was joking that seb telephone only buys clothes at kitchy early-aughts stores like claires and limited too so i made a seb dressup base and did what i had to do (i can link the psd of the base if anybody else wants to dress up seb!)
 
 client.login(process.env.TOKEN)

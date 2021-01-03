@@ -5,8 +5,12 @@ const Discord = require('discord.js');
 const client = new Discord.Client({partials:["MESSAGE"]});
 const fetch = require("node-fetch")
 
-client.on("ready",()=>{
+client.on("ready",async ()=>{
     console.log("Connected")
+    let logChannel = await client.channels.fetch(process.env.CHANNEL).catch(()=>{console.error("⚠ Cannot Fetch Log Channel");});
+    if(!logChannel) return
+    if(!logChannel.permissionsFor(client.user).has("SEND_MESSAGES")) return console.log("⚠ Missing send messages permission in log channel!")
+    console.log(`Log Channel: #${logChannel.name}`)
 })
 // --Unneeded--
 // client.on("message",()=>{
@@ -38,7 +42,7 @@ client.on("messageDelete", async (message)=>{
 
     let logMessage = `[${time}] 🗑 Proxied Message by ${accountName} (\`${accountID}\`)\n(system: \`${systemID}\`, member: \`${memberID}\` member: ${pkMessage.member.name} )\nin ${channel} has been removed.\n**Content:** ${content}`
 
-    console.log(Date.now(),"Proxy Message Deleted")
+    console.log(new Date().toLocaleTimeString('en-US',{hour12: false, hour: '2-digit', minute: '2-digit', timeZone: process.env.TIMEZONE}),"Proxy Message Deleted")
 
     logChannel.send(logMessage, {disableMentions: "all"}).catch(console.error)
 })
@@ -68,7 +72,7 @@ client.on("messageUpdate",async (oldMessage,message)=>{
 
     let logMessage = `[${time}] ✏ Proxied Message by ${accountName} (\`${accountID}\`)\n(system: \`${systemID}\`, member: \`${memberID}\` member: ${pkMessage.member.name} )\nin ${channel} has been edited.\n**Old:** ${oldContent}\n**New:** ${content}`
 
-    console.log(Date.now(),"Proxy Message Deleted")
+    console.log(new Date().toLocaleTimeString('en-US',{hour12: false, hour: '2-digit', minute: '2-digit', timeZone: process.env.TIMEZONE}),"Proxy Message Edited")
 
     logChannel.send(logMessage, {disableMentions: "all"}).catch(console.error)
 })

@@ -40,7 +40,11 @@ client.on("messageDelete", async (message)=>{
     let channel = message.channel.toString()
     let content = message.cleanContent
 
+    let attachments = message.attachments.map((att)=>att.proxyURL)
     let logMessage = `[${time}] 🗑 Proxied Message by ${accountName} (\`${accountID}\`)\n(system: \`${systemID}\`, member: \`${memberID}\` member: ${pkMessage.member.name} )\nin ${channel} has been removed.\n**Content:** ${content}`
+    if(attachments.length>0){
+        logMessage+=`\n**Attachment:**\n${attachments.join("\n")}`
+    }
 
     console.log(new Date().toLocaleTimeString('en-US',{hour12: false, hour: '2-digit', minute: '2-digit', timeZone: process.env.TIMEZONE}),"Proxy Message Deleted")
 
